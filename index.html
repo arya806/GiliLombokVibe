@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LOMBOKGO — Explore Lombok. Ride Local.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --cream: #F7F5F0;
+  --ink: #171717;
+  --green: #3F6B4F;
+  --green-light: rgba(63,107,79,0.1);
+  --sand: #D8C6A3;
+  --sand-light: rgba(216,198,163,0.25);
+  --white: #FFFFFF;
+  --muted: #6B6560;
+  --border: rgba(23,23,23,0.1);
+  --nav-h: 68px;
+  --radius: 4px;
+  --ease: cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:400;line-height:1.65;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+ul{list-style:none}
+input,select,textarea{font-family:inherit}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.15;letter-spacing:-0.01em}
+.serif{font-family:'Playfair Display',serif}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+.section-pad{padding:6rem 0}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  transition:background 0.4s ease,border-color 0.4s ease,box-shadow 0.4s ease;
+  border-bottom:1px solid transparent;
+}
+#nav.scrolled{
+  background:rgba(247,245,240,0.96);
+  backdrop-filter:blur(10px);
+  border-bottom-color:var(--border);
+  box-shadow:0 1px 20px rgba(0,0,0,0.04);
+}
+.nav-inner{
+  width:100%;max-width:1200px;margin:0 auto;padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;font-weight:700;
+  color:var(--white);
+  letter-spacing:0.02em;
+  transition:color 0.3s ease;
+  flex-shrink:0;
+}
+#nav.scrolled .nav-logo{color:var(--ink)}
+.nav-links{
+  display:flex;align-items:center;gap:2rem;
+}
+.nav-links a{
+  font-size:0.85rem;font-weight:500;
+  color:rgba(255,255,255,0.88);
+  transition:color 0.25s ease;
+  white-space:nowrap;
+}
+#nav.scrolled .nav-links a{color:var(--ink)}
+.nav-links a:hover{color:var(--white);opacity:0.7}
+#nav.scrolled .nav-links a:hover{color:var(--green);opacity:1}
+.nav-cta-btn{
+  font-size:0.8rem;font-weight:600;
+  padding:9px 20px;
+  background:var(--white);
+  color:var(--ink);
+  border-radius:var(--radius);
+  white-space:nowrap;
+  transition:background 0.25s ease,transform 0.2s ease;
+  flex-shrink:0;
+}
+.nav-cta-btn:hover{background:var(--sand);transform:translateY(-1px)}
+#nav.scrolled .nav-cta-btn{background:var(--green);color:var(--white)}
+#nav.scrolled .nav-cta-btn:hover{background:#2d5039}
+.hamburger{
+  display:none;
+  flex-direction:column;gap:5px;padding:6px;
+  background:none;border:none;
+}
+.hamburger span{
+  display:block;width:22px;height:1.5px;
+  background:var(--white);
+  transition:transform 0.3s ease,opacity 0.3s ease,background 0.3s ease;
+}
+#nav.scrolled .hamburger span{background:var(--ink)}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* Mobile nav */
+.mobile-nav{
+  display:none;
+  position:fixed;top:var(--nav-h);left:0;right:0;
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:1.5rem 2rem 2rem;
+  z-index:199;
+  flex-direction:column;gap:1rem;
+}
+.mobile-nav.open{display:flex}
+.mobile-nav a{
+  font-size:1rem;font-weight:500;color:var(--ink);
+  padding:0.5rem 0;
+  border-bottom:1px solid var(--border);
+}
+.mobile-nav .mobile-cta{
+  margin-top:0.5rem;
+  background:var(--green);color:var(--white);
+  text-align:center;padding:12px;
+  border-radius:var(--radius);
+  font-weight:600;border-bottom:none;
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+#hero{
+  min-height:100vh;
+  position:relative;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding-bottom:0;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to bottom, rgba(10,20,15,0.45) 0%, rgba(10,20,15,0.2) 40%, rgba(10,20,15,0.6) 100%);
+  z-index:1;
+}
+.hero-bg-image{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 40%, #2d5a3d 0%, #1a3d28 40%, #0d2218 100%);
+  z-index:0;
+  overflow:hidden;
+}
+.hero-bg-image::before{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:45%;
+  background:linear-gradient(to bottom, #1d3d2c 0%, #152d20 50%, #0e1f16 100%);
+  clip-path:polygon(0 40%, 15% 20%, 28% 35%, 42% 10%, 55% 25%, 68% 5%, 80% 20%, 92% 8%, 100% 15%, 100% 100%, 0 100%);
+}
+.hero-bg-image::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:25%;
+  background:linear-gradient(to bottom, rgba(63,107,79,0.3), rgba(30,60,40,0.6));
+}
+.hero-sky{
+  position:absolute;
+  top:5%;left:0;right:0;height:55%;
+  background:
+    radial-gradient(ellipse 70% 80% at 65% 30%, rgba(255,200,100,0.18) 0%, transparent 60%),
+    linear-gradient(180deg, #0a1a24 0%, #133045 35%, #1a4a35 70%, transparent 100%);
+  z-index:0;
+}
+.hero-stars{
+  position:absolute;top:0;left:0;right:0;bottom:40%;
+  z-index:0;
+}
+.hero-stars::before{
+  content:'·  ·    ·  ·       ·    ·  ·   ·      ·    ·  ·    · ·   ·    ·   · ·    ·';
+  position:absolute;inset:0;
+  font-size:1.2rem;color:rgba(255,255,255,0.4);
+  word-break:break-all;letter-spacing:1.8rem;line-height:2.5rem;
+  padding:2rem;
+}
+.hero-content{
+  position:relative;z-index:2;
+  padding:calc(var(--nav-h) + 4rem) 0 0;
+}
+.hero-content-inner{
+  max-width:1200px;margin:0 auto;padding:0 2rem;
+  padding-bottom:3rem;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.9);
+  font-size:0.75rem;font-weight:500;
+  letter-spacing:0.06em;
+  padding:6px 14px;
+  border-radius:100px;
+  margin-bottom:1.8rem;
+  backdrop-filter:blur(6px);
+}
+.hero-badge-dot{
+  width:6px;height:6px;
+  background:var(--sand);
+  border-radius:50%;
+}
+.hero-headline{
+  font-size:clamp(2.8rem,6vw,5.2rem);
+  font-weight:700;
+  color:var(--white);
+  line-height:1.08;
+  max-width:680px;
+  margin-bottom:1.4rem;
+}
+.hero-headline span{
+  color:var(--sand);
+  font-style:italic;
+}
+.hero-sub{
+  font-size:1.05rem;
+  color:rgba(255,255,255,0.75);
+  max-width:480px;
+  line-height:1.75;
+  margin-bottom:2.4rem;
+  font-weight:300;
+}
+.hero-actions{
+  display:flex;align-items:center;gap:1rem;
+  flex-wrap:wrap;
+}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.88rem;font-weight:600;
+  padding:13px 26px;
+  background:var(--green);
+  color:var(--white);
+  border-radius:var(--radius);
+  border:1.5px solid var(--green);
+  transition:background 0.25s ease,transform 0.2s ease,box-shadow 0.2s ease;
+}
+.btn-primary:hover{background:#2d5039;border-color:#2d5039;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.88rem;font-weight:600;
+  padding:13px 26px;
+  background:rgba(255,255,255,0.12);
+  color:var(--white);
+  border-radius:var(--radius);
+  border:1.5px solid rgba(255,255,255,0.35);
+  backdrop-filter:blur(6px);
+  transition:background 0.25s ease,transform 0.2s ease;
+}
+.btn-ghost:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px)}
+.hero-stats{
+  display:flex;gap:3rem;
+  padding:2rem 0;
+  border-top:1px solid rgba(255,255,255,0.12);
+  margin-top:2rem;
+}
+.hero-stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;
+  color:var(--white);
+  display:block;
+}
+.hero-stat-label{
+  font-size:0.75rem;color:rgba(255,255,255,0.6);
+  font-weight:400;letter-spacing:0.02em;
+}
+
+/* ═══════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════ */
+#search{
+  background:var(--white);
+  padding:3.5rem 0;
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:10;
+}
+.search-title{
+  font-size:1.5rem;font-weight:700;
+  font-family:'Playfair Display',serif;
+  margin-bottom:1.6rem;
+  color:var(--ink);
+}
+.search-panel{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:0;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  background:var(--white);
+}
+.search-field{
+  padding:1rem 1.4rem;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:4px;
+}
+.search-field:last-of-type{border-right:none}
+.search-field label{
+  font-size:0.7rem;font-weight:600;
+  color:var(--muted);
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+.search-field select,
+.search-field input{
+  font-size:0.9rem;font-weight:500;color:var(--ink);
+  border:none;outline:none;background:transparent;
+  padding:2px 0;
+  -webkit-appearance:none;appearance:none;
+  cursor:pointer;
+  width:100%;
+}
+.search-field select option{color:var(--ink)}
+.search-btn{
+  background:var(--green);
+  color:var(--white);
+  font-size:0.88rem;font-weight:600;
+  padding:0 2.2rem;
+  border:none;
+  cursor:pointer;
+  transition:background 0.25s ease;
+  white-space:nowrap;
+}
+.search-btn:hover{background:#2d5039}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS
+═══════════════════════════════════════════ */
+.sh{margin-bottom:3rem}
+.sh-label{
+  font-size:0.72rem;font-weight:600;
+  color:var(--green);
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  margin-bottom:0.7rem;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.sh-label::before{
+  content:'';display:block;
+  width:20px;height:1.5px;
+  background:var(--green);
+}
+.sh h2{
+  font-size:clamp(1.9rem,3.5vw,2.8rem);
+  font-weight:700;
+  line-height:1.18;
+  max-width:520px;
+}
+.sh p{
+  font-size:0.96rem;color:var(--muted);
+  margin-top:0.8rem;max-width:500px;
+  line-height:1.72;
+}
+
+/* ═══════════════════════════════════════════
+   DESTINATIONS
+═══════════════════════════════════════════ */
+#destinasi{background:var(--cream);padding:5rem 0}
+.dest-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.2rem;
+}
+.dest-card{
+  position:relative;border-radius:var(--radius);
+  overflow:hidden;
+  height:260px;
+  cursor:pointer;
+}
+.dest-card:nth-child(1){grid-column:span 2;height:320px}
+.dest-card-bg{
+  position:absolute;inset:0;
+  background:var(--color,#1a3d28);
+  transition:transform 0.55s var(--ease);
+}
+.dest-card:hover .dest-card-bg{transform:scale(1.04)}
+.dest-card:nth-child(1) .dest-card-bg{background:linear-gradient(135deg,#0d3020 0%,#1d5038 50%,#2a6845 100%)}
+.dest-card:nth-child(2) .dest-card-bg{background:linear-gradient(135deg,#0f2d44 0%,#1a4a6a 50%,#1e5577 100%)}
+.dest-card:nth-child(3) .dest-card-bg{background:linear-gradient(135deg,#2a1a0a 0%,#4a2e10 50%,#5c3a18 100%)}
+.dest-card:nth-child(4) .dest-card-bg{background:linear-gradient(135deg,#152800 0%,#254800 50%,#2f5a00 100%)}
+.dest-card:nth-child(5) .dest-card-bg{background:linear-gradient(135deg,#2d1240 0%,#4a1f6a 50%,#5a2880 100%)}
+.dest-card:nth-child(6) .dest-card-bg{background:linear-gradient(135deg,#0a2030 0%,#1a4050 50%,#225060 100%)}
+.dest-card:nth-child(1) .dest-card-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:rgba(255,255,255,0.05);
+  clip-path:polygon(0 60%,20% 30%,40% 50%,60% 20%,80% 40%,100% 15%,100% 100%,0 100%);
+}
+.dest-card:nth-child(2) .dest-card-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:45%;
+  background:rgba(255,255,255,0.06);
+  clip-path:ellipse(60% 40% at 50% 100%);
+}
+.dest-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(10,15,12,0.85) 0%, rgba(10,15,12,0.1) 60%);
+  z-index:1;
+}
+.dest-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.6rem;z-index:2;
+}
+.dest-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.25rem;font-weight:700;
+  color:var(--white);margin-bottom:0.3rem;
+}
+.dest-card:nth-child(1) .dest-name{font-size:1.6rem}
+.dest-desc{
+  font-size:0.78rem;color:rgba(255,255,255,0.72);
+  margin-bottom:0.8rem;line-height:1.5;
+}
+.dest-link{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:0.75rem;font-weight:600;
+  color:var(--sand);
+  letter-spacing:0.04em;
+  transition:gap 0.2s ease;
+}
+.dest-card:hover .dest-link{gap:0.7rem}
+
+/* ═══════════════════════════════════════════
+   PACKAGES
+═══════════════════════════════════════════ */
+#paket{background:var(--white);padding:5rem 0}
+.packages-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+}
+.package-card{
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:2rem;
+  position:relative;
+  transition:border-color 0.3s ease,box-shadow 0.3s ease,transform 0.3s ease;
+  background:var(--white);
+}
+.package-card:hover{
+  border-color:var(--green);
+  box-shadow:0 12px 40px rgba(63,107,79,0.1);
+  transform:translateY(-3px);
+}
+.package-duration{
+  font-size:0.72rem;font-weight:600;
+  color:var(--green);
+  background:var(--green-light);
+  padding:4px 10px;
+  border-radius:100px;
+  display:inline-block;
+  margin-bottom:1rem;
+}
+.package-card h3{
+  font-size:1.2rem;font-weight:700;
+  margin-bottom:1rem;color:var(--ink);
+}
+.package-includes{
+  margin-bottom:1.4rem;
+}
+.package-includes li{
+  font-size:0.82rem;color:var(--muted);
+  padding:4px 0;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.package-includes li::before{
+  content:'';display:block;
+  width:5px;height:5px;
+  background:var(--sand);
+  border-radius:50%;flex-shrink:0;
+}
+.package-price{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;font-weight:700;
+  color:var(--ink);
+  margin-bottom:1.2rem;
+}
+.package-price-note{
+  font-size:0.7rem;color:var(--muted);
+  font-weight:400;font-family:'DM Sans',sans-serif;
+  display:block;margin-top:0.2rem;
+}
+.btn-outline-green{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:0.82rem;font-weight:600;
+  padding:10px 20px;
+  border:1.5px solid var(--green);
+  color:var(--green);
+  border-radius:var(--radius);
+  background:transparent;
+  transition:background 0.25s ease,color 0.25s ease;
+  cursor:pointer;
+  width:100%;justify-content:center;
+}
+.btn-outline-green:hover{background:var(--green);color:var(--white)}
+
+/* ═══════════════════════════════════════════
+   DRIVERS
+═══════════════════════════════════════════ */
+#driver{background:var(--cream);padding:5rem 0}
+.drivers-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+}
+.driver-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.8rem;
+  transition:border-color 0.3s ease,box-shadow 0.3s ease,transform 0.3s ease;
+  cursor:pointer;
+}
+.driver-card:hover{
+  border-color:rgba(63,107,79,0.4);
+  box-shadow:0 12px 40px rgba(0,0,0,0.07);
+  transform:translateY(-3px);
+}
+.driver-card-top{
+  display:flex;align-items:flex-start;gap:1rem;
+  margin-bottom:1.4rem;
+}
+.driver-avatar{
+  width:58px;height:58px;
+  border-radius:50%;
+  background:var(--sand-light);
+  border:2px solid var(--border);
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:700;
+  color:var(--green);
+  position:relative;
+}
+.driver-verified{
+  position:absolute;bottom:-3px;right:-3px;
+  width:18px;height:18px;
+  background:var(--green);
+  border-radius:50%;
+  border:2px solid var(--white);
+  display:flex;align-items:center;justify-content:center;
+}
+.driver-verified svg{width:10px;height:10px}
+.driver-meta-name{
+  font-size:1.05rem;font-weight:700;
+  margin-bottom:2px;
+}
+.driver-meta-loc{
+  font-size:0.78rem;color:var(--muted);
+  display:flex;align-items:center;gap:0.3rem;
+  margin-bottom:0.4rem;
+}
+.driver-rating{
+  display:flex;align-items:center;gap:0.3rem;
+  font-size:0.8rem;font-weight:600;
+  color:var(--ink);
+}
+.driver-rating span{color:#c9963a}
+.driver-info-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;
+  margin-bottom:1.2rem;
+}
+.driver-info-item{
+  background:var(--cream);
+  border-radius:var(--radius);
+  padding:0.6rem 0.8rem;
+}
+.driver-info-label{
+  font-size:0.65rem;color:var(--muted);
+  font-weight:600;letter-spacing:0.05em;
+  text-transform:uppercase;margin-bottom:2px;
+}
+.driver-info-val{
+  font-size:0.82rem;font-weight:500;color:var(--ink);
+}
+.driver-langs{
+  font-size:0.76rem;color:var(--muted);
+  margin-bottom:1.3rem;
+}
+.driver-price-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:1rem;
+  border-top:1px solid var(--border);
+}
+.driver-price{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;color:var(--ink);
+}
+.driver-price small{
+  font-family:'DM Sans',sans-serif;
+  font-size:0.72rem;color:var(--muted);font-weight:400;
+}
+.btn-sm-green{
+  font-size:0.78rem;font-weight:600;
+  padding:8px 16px;
+  background:var(--green);
+  color:var(--white);
+  border-radius:var(--radius);
+  border:none;
+  cursor:pointer;
+  transition:background 0.2s ease;
+}
+.btn-sm-green:hover{background:#2d5039}
+
+/* ═══════════════════════════════════════════
+   TRUST
+═══════════════════════════════════════════ */
+#trust{background:var(--ink);padding:5rem 0}
+#trust .sh-label{color:var(--sand)}
+#trust .sh-label::before{background:var(--sand)}
+#trust .sh h2{color:var(--white)}
+#trust .sh p{color:rgba(255,255,255,0.6)}
+.trust-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.trust-item{
+  padding:2.4rem 2rem;
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+.trust-item:last-child{border-right:none}
+.trust-icon{
+  width:44px;height:44px;
+  background:rgba(63,107,79,0.25);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1.2rem;
+}
+.trust-icon svg{width:22px;height:22px;stroke:var(--sand)}
+.trust-item h3{
+  font-size:1rem;font-weight:700;
+  color:var(--white);
+  margin-bottom:0.5rem;
+}
+.trust-item p{
+  font-size:0.83rem;
+  color:rgba(255,255,255,0.55);
+  line-height:1.68;
+}
+
+/* ═══════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════ */
+#cara-kerja{background:var(--white);padding:5rem 0}
+.steps-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0;
+  position:relative;
+}
+.steps-row::before{
+  content:'';
+  position:absolute;
+  top:28px;
+  left:calc(100%/6);
+  right:calc(100%/6);
+  height:1px;
+  background:var(--border);
+  z-index:0;
+}
+.step-item{
+  padding:0 2.5rem;
+  text-align:left;
+  position:relative;
+  z-index:1;
+}
+.step-item:first-child{padding-left:0}
+.step-item:last-child{padding-right:0}
+.step-num{
+  width:56px;height:56px;
+  border:1.5px solid var(--green);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;color:var(--green);
+  margin-bottom:1.8rem;
+  background:var(--white);
+}
+.step-item h3{
+  font-size:1.15rem;font-weight:700;
+  margin-bottom:0.6rem;
+}
+.step-item p{
+  font-size:0.86rem;color:var(--muted);line-height:1.7;
+}
+
+/* ═══════════════════════════════════════════
+   DRIVER CTA SECTION
+═══════════════════════════════════════════ */
+#driver-join{
+  background:var(--cream);
+  padding:5.5rem 0;
+  border-top:1px solid var(--border);
+}
+.driver-join-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5rem;
+  align-items:center;
+}
+.driver-join-left{}
+.free-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--green);
+  color:var(--white);
+  font-size:0.75rem;font-weight:700;
+  letter-spacing:0.1em;
+  padding:6px 14px;
+  border-radius:100px;
+  margin-bottom:1.4rem;
+}
+.driver-join-left h2{
+  font-size:clamp(1.8rem,3vw,2.5rem);
+  font-weight:700;
+  line-height:1.2;
+  margin-bottom:1rem;
+}
+.driver-join-left .desc{
+  font-size:0.96rem;color:var(--muted);
+  line-height:1.75;margin-bottom:1.8rem;
+}
+.no-fee-list{
+  margin-bottom:1.8rem;
+}
+.no-fee-list li{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:0.88rem;color:var(--muted);
+  padding:4px 0;
+}
+.no-fee-list li::before{
+  content:'';display:block;
+  width:18px;height:18px;
+  background:var(--green-light);
+  border-radius:50%;
+  flex-shrink:0;
+}
+.driver-join-actions{
+  display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;
+}
+.btn-primary-green{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.88rem;font-weight:600;
+  padding:13px 26px;
+  background:var(--green);
+  color:var(--white);
+  border-radius:var(--radius);
+  border:none;cursor:pointer;
+  transition:background 0.25s ease,transform 0.2s ease;
+}
+.btn-primary-green:hover{background:#2d5039;transform:translateY(-2px)}
+.link-subtle{
+  font-size:0.85rem;font-weight:500;
+  color:var(--muted);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+  transition:color 0.2s ease;
+}
+.link-subtle:hover{color:var(--ink)}
+
+.commission-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:2.5rem;
+}
+.commission-card h3{
+  font-size:1.1rem;font-weight:700;
+  margin-bottom:0.4rem;
+  color:var(--ink);
+}
+.commission-card .sub{
+  font-size:0.82rem;color:var(--muted);
+  margin-bottom:2rem;
+  line-height:1.6;
+}
+.commission-flow{
+  display:flex;flex-direction:column;gap:0;
+}
+.cf-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.2rem;
+  background:var(--cream);
+  margin-bottom:2px;
+}
+.cf-item:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.cf-item.cf-booking{background:#f0f7f2}
+.cf-label{font-size:0.8rem;color:var(--muted);font-weight:500}
+.cf-value{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;font-weight:700;color:var(--ink);
+}
+.cf-item.cf-commission .cf-value{color:#c0392b}
+.cf-item.cf-driver{
+  background:var(--green);
+  border-radius:0 0 var(--radius) var(--radius);
+  margin-bottom:0;
+}
+.cf-item.cf-driver .cf-label{color:rgba(255,255,255,0.75)}
+.cf-item.cf-driver .cf-value{color:var(--white)}
+.commission-note{
+  font-size:0.74rem;color:var(--muted);
+  margin-top:1rem;line-height:1.6;
+  text-align:center;font-style:italic;
+}
+
+/* ═══════════════════════════════════════════
+   BENEFITS
+═══════════════════════════════════════════ */
+#benefits{background:var(--white);padding:5rem 0}
+.benefits-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;
+  margin-top:3rem;
+}
+.benefit-card{
+  background:var(--cream);
+  border-radius:var(--radius);
+  padding:2rem 1.6rem;
+  border:1.5px solid transparent;
+  transition:border-color 0.3s ease,background 0.3s ease;
+}
+.benefit-card:hover{
+  border-color:var(--green);
+  background:var(--white);
+}
+.benefit-icon{
+  width:44px;height:44px;
+  background:var(--green-light);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1.2rem;
+}
+.benefit-icon svg{width:22px;height:22px;stroke:var(--green)}
+.benefit-card h3{
+  font-size:0.96rem;font-weight:700;
+  margin-bottom:0.5rem;color:var(--ink);
+}
+.benefit-card p{
+  font-size:0.82rem;color:var(--muted);line-height:1.68;
+}
+
+/* ═══════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════ */
+#testimoni{background:var(--cream);padding:5rem 0}
+.testi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+}
+.testi-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:2rem;
+}
+.testi-quote{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;line-height:0.8;
+  color:var(--sand);
+  margin-bottom:0.8rem;
+  display:block;
+}
+.testi-text{
+  font-size:0.9rem;color:var(--ink);
+  line-height:1.78;
+  font-style:italic;
+  margin-bottom:1.5rem;
+}
+.testi-author-name{
+  font-size:0.85rem;font-weight:700;color:var(--ink);
+}
+.testi-author-role{
+  font-size:0.74rem;color:var(--muted);margin-top:2px;
+}
+.testi-demo-note{
+  font-size:0.68rem;color:var(--muted);
+  margin-top:2rem;text-align:center;
+  font-style:italic;opacity:0.7;
+}
+
+/* ═══════════════════════════════════════════
+   EXPERIENCES
+═══════════════════════════════════════════ */
+#experiences{background:var(--white);padding:5rem 0}
+.exp-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.5rem;
+  margin-top:3rem;
+}
+.exp-card{
+  border-radius:var(--radius);overflow:hidden;
+  position:relative;height:240px;cursor:pointer;
+}
+.exp-card:nth-child(1){grid-row:span 2;height:auto}
+.exp-card-bg{
+  position:absolute;inset:0;
+  transition:transform 0.5s var(--ease);
+}
+.exp-card:hover .exp-card-bg{transform:scale(1.05)}
+.exp-card:nth-child(1) .exp-card-bg{background:linear-gradient(150deg,#0a2a1a,#1d5038)}
+.exp-card:nth-child(2) .exp-card-bg{background:linear-gradient(150deg,#0a1a30,#1a3a5a)}
+.exp-card:nth-child(3) .exp-card-bg{background:linear-gradient(150deg,#1a100a,#3a220e)}
+.exp-card:nth-child(4) .exp-card-bg{background:linear-gradient(150deg,#0a1e10,#183520)}
+.exp-card:nth-child(5) .exp-card-bg{background:linear-gradient(150deg,#1a0a20,#36155a)}
+.exp-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.05) 70%);
+}
+.exp-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.5rem;z-index:1;
+}
+.exp-tag{
+  font-size:0.68rem;font-weight:600;
+  color:var(--sand);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:0.4rem;
+  display:block;
+}
+.exp-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:700;
+  color:var(--white);
+}
+.exp-card:nth-child(1) .exp-title{font-size:1.5rem}
+
+/* ═══════════════════════════════════════════
+   FINAL CTA
+═══════════════════════════════════════════ */
+#final-cta{
+  background:var(--ink);
+  padding:7rem 0;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+#final-cta::before{
+  content:'';position:absolute;
+  top:-100px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(ellipse,rgba(63,107,79,0.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.final-cta-inner{position:relative;z-index:1}
+.final-cta-inner h2{
+  font-size:clamp(2rem,4.5vw,3.5rem);
+  font-weight:700;color:var(--white);
+  line-height:1.15;margin-bottom:1rem;
+}
+.final-cta-inner p{
+  font-size:1rem;color:rgba(255,255,255,0.6);
+  max-width:460px;margin:0 auto 2.5rem;line-height:1.72;
+}
+.cta-btn-row{
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+  flex-wrap:wrap;
+}
+.btn-white{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.88rem;font-weight:600;
+  padding:13px 26px;
+  background:var(--white);
+  color:var(--ink);
+  border-radius:var(--radius);
+  border:none;cursor:pointer;
+  transition:background 0.25s ease,transform 0.2s ease;
+}
+.btn-white:hover{background:var(--sand);transform:translateY(-2px)}
+.btn-ghost-white{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.88rem;font-weight:600;
+  padding:13px 26px;
+  background:transparent;
+  color:var(--white);
+  border-radius:var(--radius);
+  border:1.5px solid rgba(255,255,255,0.3);
+  cursor:pointer;
+  transition:background 0.25s ease,transform 0.2s ease;
+}
+.btn-ghost-white:hover{background:rgba(255,255,255,0.1);transform:translateY(-2px)}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  background:#0f0f0f;
+  padding:4rem 0 2.5rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.footer-inner{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1.5fr;
+  gap:3rem;
+  margin-bottom:3rem;
+}
+.footer-brand-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;font-weight:700;
+  color:var(--white);margin-bottom:0.4rem;
+}
+.footer-tagline{
+  font-size:0.8rem;color:rgba(255,255,255,0.45);
+  margin-bottom:1.2rem;
+}
+.footer-desc{
+  font-size:0.82rem;color:rgba(255,255,255,0.4);
+  line-height:1.7;max-width:240px;
+}
+.footer-col-title{
+  font-size:0.7rem;font-weight:700;
+  color:rgba(255,255,255,0.6);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:1rem;
+}
+.footer-links{display:flex;flex-direction:column;gap:0.55rem}
+.footer-links a{
+  font-size:0.82rem;color:rgba(255,255,255,0.45);
+  transition:color 0.2s ease;
+}
+.footer-links a:hover{color:var(--white)}
+.footer-contact-item{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:0.82rem;color:rgba(255,255,255,0.45);
+  margin-bottom:0.5rem;
+}
+.footer-contact-item a{color:inherit;transition:color 0.2s ease}
+.footer-contact-item a:hover{color:var(--white)}
+.footer-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:2rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.footer-copy{
+  font-size:0.76rem;color:rgba(255,255,255,0.3);
+}
+.footer-credit{
+  font-size:0.76rem;color:rgba(255,255,255,0.3);
+}
+.footer-credit a{color:rgba(255,255,255,0.5);transition:color 0.2s ease}
+.footer-credit a:hover{color:var(--white)}
+
+/* ═══════════════════════════════════════════
+   STICKY MOBILE CTA
+═══════════════════════════════════════════ */
+.sticky-mobile-cta{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--ink);
+  padding:1rem 1.5rem;
+  z-index:150;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.sticky-mobile-cta .btn-primary-green{
+  width:100%;justify-content:center;
+}
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  z-index:300;
+  align-items:center;justify-content:center;
+  padding:1.5rem;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);
+  border-radius:8px;
+  width:100%;max-width:640px;
+  max-height:90vh;
+  overflow-y:auto;
+  position:relative;
+}
+.modal-header{
+  padding:2rem 2rem 0;
+  border-bottom:1px solid var(--border);
+  margin-bottom:0;
+}
+.modal-header h2{
+  font-size:1.5rem;font-weight:700;
+  margin-bottom:0.4rem;
+}
+.modal-header p{
+  font-size:0.85rem;color:var(--muted);
+  margin-bottom:1.4rem;line-height:1.6;
+}
+.modal-close{
+  position:absolute;top:1.2rem;right:1.4rem;
+  width:32px;height:32px;
+  background:var(--cream);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;font-size:1.1rem;color:var(--muted);
+  transition:background 0.2s ease;
+}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:1.8rem 2rem 2rem}
+.form-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+  margin-bottom:1rem;
+}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field.full{grid-column:span 2}
+.form-field label{
+  font-size:0.76rem;font-weight:600;
+  color:var(--ink);letter-spacing:0.04em;
+}
+.form-field input,
+.form-field select,
+.form-field textarea{
+  padding:10px 12px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  font-size:0.88rem;color:var(--ink);
+  outline:none;
+  transition:border-color 0.2s ease;
+  background:var(--white);
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus{
+  border-color:var(--green);
+}
+.form-field textarea{resize:vertical;min-height:80px}
+.form-check{
+  display:flex;align-items:flex-start;gap:0.6rem;
+  margin-bottom:0.8rem;
+}
+.form-check input[type=checkbox]{
+  margin-top:3px;flex-shrink:0;
+  accent-color:var(--green);
+}
+.form-check label{
+  font-size:0.8rem;color:var(--muted);line-height:1.6;
+}
+.modal-submit{
+  width:100%;margin-top:1.2rem;
+}
+.modal-success{
+  display:none;
+  text-align:center;padding:3rem 2rem;
+}
+.modal-success .success-icon{
+  width:60px;height:60px;
+  background:var(--green);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.2rem;
+}
+.modal-success .success-icon svg{width:28px;height:28px;stroke:white}
+.modal-success h3{
+  font-size:1.4rem;font-weight:700;margin-bottom:0.6rem;
+}
+.modal-success p{
+  font-size:0.88rem;color:var(--muted);
+  line-height:1.7;max-width:340px;margin:0 auto;
+}
+
+/* Driver Detail Modal */
+.driver-modal-inner{
+  max-width:700px;
+}
+.driver-modal-header{
+  background:linear-gradient(135deg,#0d2a18,#1d4a30);
+  padding:2.5rem 2rem;
+  position:relative;
+}
+.driver-modal-close{
+  position:absolute;top:1rem;right:1rem;
+  width:32px;height:32px;
+  background:rgba(255,255,255,0.15);
+  border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:white;font-size:1rem;
+  transition:background 0.2s ease;
+}
+.driver-modal-close:hover{background:rgba(255,255,255,0.25)}
+.dpm-top{
+  display:flex;align-items:flex-start;gap:1.2rem;
+}
+.dpm-avatar{
+  width:72px;height:72px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;color:white;
+  flex-shrink:0;
+}
+.dpm-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:700;color:white;
+  margin-bottom:0.2rem;
+}
+.dpm-verified{
+  font-size:0.72rem;color:var(--sand);
+  letter-spacing:0.06em;font-weight:600;
+  display:flex;align-items:center;gap:0.3rem;
+  margin-bottom:0.5rem;
+}
+.dpm-stats{
+  display:flex;gap:1.5rem;margin-top:1rem;
+}
+.dpm-stat{text-align:center}
+.dpm-stat-val{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:700;color:white;
+  display:block;
+}
+.dpm-stat-label{
+  font-size:0.68rem;color:rgba(255,255,255,0.55);
+  letter-spacing:0.04em;
+}
+.driver-modal-body{padding:2rem}
+.dpm-section-title{
+  font-size:0.72rem;font-weight:700;
+  color:var(--muted);letter-spacing:0.1em;
+  text-transform:uppercase;margin-bottom:1rem;
+}
+.dpm-packages-list{margin-bottom:1.5rem}
+.dpm-package-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.7rem 0;
+  border-bottom:1px solid var(--border);
+}
+.dpm-package-row:last-child{border-bottom:none}
+.dpm-pkg-name{font-size:0.88rem;font-weight:600;color:var(--ink)}
+.dpm-pkg-price{
+  font-family:'Playfair Display',serif;
+  font-size:0.95rem;font-weight:700;color:var(--green);
+}
+.dpm-reviews{margin-top:1.5rem}
+.review-item{
+  padding:1rem 0;
+  border-bottom:1px solid var(--border);
+}
+.review-item:last-child{border-bottom:none}
+.review-top{
+  display:flex;align-items:center;gap:0.6rem;
+  margin-bottom:0.4rem;
+}
+.review-name{font-size:0.82rem;font-weight:600}
+.review-rating{font-size:0.78rem;color:#c9963a}
+.review-text{font-size:0.82rem;color:var(--muted);line-height:1.65;font-style:italic}
+.dpm-cta-row{
+  display:flex;gap:1rem;margin-top:1.5rem;
+}
+.btn-wa{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.85rem;font-weight:600;
+  padding:12px 22px;
+  background:#25D366;color:white;
+  border-radius:var(--radius);border:none;cursor:pointer;
+  transition:background 0.2s ease;
+}
+.btn-wa:hover{background:#1ebe5a}
+
+/* ═══════════════════════════════════════════
+   REVEAL ANIMATION
+═══════════════════════════════════════════ */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.65s var(--ease),transform 0.65s var(--ease);
+}
+.reveal.in{opacity:1;transform:none}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:1024px){
+  .dest-grid{grid-template-columns:1fr 1fr}
+  .dest-card:nth-child(1){grid-column:span 2}
+  .packages-grid{grid-template-columns:1fr 1fr}
+  .drivers-grid{grid-template-columns:1fr 1fr}
+  .trust-grid{grid-template-columns:1fr 1fr}
+  .trust-item{border-bottom:1px solid rgba(255,255,255,0.08)}
+  .trust-item:nth-child(2){border-right:none}
+  .trust-item:nth-child(3){border-right:1px solid rgba(255,255,255,0.08)}
+  .trust-item:last-child{border-right:none}
+  .benefits-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr 1fr}
+  .footer-inner{grid-template-columns:1fr 1fr;gap:2rem}
+  .driver-join-inner{grid-template-columns:1fr;gap:2.5rem}
+}
+
+@media(max-width:768px){
+  .nav-links,.nav-cta-btn{display:none}
+  .hamburger{display:flex}
+  .section-pad{padding:4rem 0}
+  .dest-grid{grid-template-columns:1fr;overflow-x:auto}
+  .dest-card:nth-child(1){grid-column:span 1;height:260px}
+  .packages-grid{grid-template-columns:1fr}
+  .drivers-grid{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:1fr;border:none}
+  .trust-item{border-right:none;border:1px solid rgba(255,255,255,0.08);margin-bottom:1px}
+  .steps-row{grid-template-columns:1fr;gap:2rem}
+  .steps-row::before{display:none}
+  .step-item{padding:0}
+  .benefits-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr;overflow-x:auto}
+  .exp-grid{grid-template-columns:1fr}
+  .exp-card:nth-child(1){grid-row:auto}
+  .footer-inner{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;gap:0.5rem;text-align:center}
+  .sticky-mobile-cta{display:block}
+  .hero-stats{flex-direction:column;gap:1rem}
+  .form-grid{grid-template-columns:1fr}
+  .form-field.full{grid-column:auto}
+  .dpm-stats{flex-wrap:wrap;gap:1rem}
+  .dpm-cta-row{flex-direction:column}
+  .search-panel{
+    grid-template-columns:1fr;
+    border:none;gap:2px;
+  }
+  .search-field{
+    border-right:none;
+    border:1.5px solid var(--border);
+    border-radius:var(--radius);
+  }
+  .search-btn{
+    padding:14px;border-radius:var(--radius);
+    border:none;
+  }
+}
+@media(max-width:480px){
+  .benefits-grid{grid-template-columns:1fr}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  .cta-btn-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<header id="nav" role="banner">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">LOMBOKGO</a>
+    <nav class="nav-links" aria-label="Navigasi utama">
+      <a href="#destinasi">Jelajahi</a>
+      <a href="#paket">Paket Wisata</a>
+      <a href="#driver">Driver</a>
+      <a href="#cara-kerja">Cara Kerja</a>
+      <a href="#final-cta">Tentang Kami</a>
+    </nav>
+    <button class="nav-cta-btn" onclick="openRegModal()" aria-label="Jadi Driver">Jadi Driver</button>
+    <button class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-nav" id="mobileNav" aria-label="Navigasi mobile">
+  <a href="#destinasi" class="mobile-link">Jelajahi</a>
+  <a href="#paket" class="mobile-link">Paket Wisata</a>
+  <a href="#driver" class="mobile-link">Driver</a>
+  <a href="#cara-kerja" class="mobile-link">Cara Kerja</a>
+  <a href="#final-cta" class="mobile-link">Tentang Kami</a>
+  <a href="#" class="mobile-link mobile-cta" onclick="openRegModal();return false;">Jadi Driver — Gratis</a>
+</nav>
+
+<main>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero" aria-label="Hero">
+  <div class="hero-bg-image">
+    <div class="hero-sky"></div>
+    <div class="hero-stars"></div>
+  </div>
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-content-inner">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Marketplace Driver Lokal Lombok #1
+      </div>
+      <h1 class="hero-headline">
+        Jelajahi Lombok.<br/>
+        Bersama <span>Driver Lokal.</span>
+      </h1>
+      <p class="hero-sub">
+        Temukan driver lokal terpercaya untuk menjelajahi pantai, desa, air terjun, dan destinasi terbaik Lombok dengan cara yang lebih personal.
+      </p>
+      <div class="hero-actions">
+        <a href="#destinasi" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Jelajahi Lombok
+        </a>
+        <button class="btn-ghost" onclick="openRegModal()">Jadi Driver — Gratis</button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span class="hero-stat-num">120+</span>
+          <span class="hero-stat-label">Driver Terverifikasi</span>
+        </div>
+        <div>
+          <span class="hero-stat-num">40+</span>
+          <span class="hero-stat-label">Destinasi Lombok</span>
+        </div>
+        <div>
+          <span class="hero-stat-num">Rp0</span>
+          <span class="hero-stat-label">Biaya Pendaftaran Driver</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SEARCH ═══ -->
+<section id="search" aria-label="Cari driver">
+  <div class="container">
+    <h2 class="search-title">Mau menjelajahi Lombok ke mana?</h2>
+    <div class="search-panel" role="search">
+      <div class="search-field">
+        <label for="dest-select">Destinasi</label>
+        <select id="dest-select" aria-label="Pilih destinasi">
+          <option value="">Semua Destinasi</option>
+          <option>Kuta Mandalika</option>
+          <option>Senggigi</option>
+          <option>Gili Trawangan</option>
+          <option>Gili Air</option>
+          <option>Gili Meno</option>
+          <option>Tetebatu</option>
+          <option>Sembalun</option>
+          <option>Senaru</option>
+          <option>Bangsal</option>
+          <option>Mataram</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label for="date-input">Tanggal</label>
+        <input type="date" id="date-input" aria-label="Pilih tanggal"/>
+      </div>
+      <div class="search-field">
+        <label for="guest-select">Jumlah Tamu</label>
+        <select id="guest-select" aria-label="Pilih jumlah tamu">
+          <option>1 Tamu</option>
+          <option>2 Tamu</option>
+          <option>3 Tamu</option>
+          <option>4 Tamu</option>
+          <option>5+ Tamu</option>
+        </select>
+      </div>
+      <button class="search-btn" aria-label="Cari driver">Cari Driver</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DESTINATIONS ═══ -->
+<section id="destinasi" class="section-pad" aria-labelledby="dest-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Jelajahi</div>
+      <h2 id="dest-title">Destinasi Populer di Lombok</h2>
+      <p>Dari pantai selatan hingga pegunungan Rinjani — Lombok menyimpan lebih dari yang Anda bayangkan.</p>
+    </div>
+    <div class="dest-grid">
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Kuta Mandalika</div>
+          <div class="dest-desc">Pantai, sunset & kawasan Mandalika yang ikonik</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Gili Trawangan</div>
+          <div class="dest-desc">Island hopping & kehidupan pulau yang vibrant</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Sembalun</div>
+          <div class="dest-desc">Pegunungan & panorama Rinjani yang memukau</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Tetebatu</div>
+          <div class="dest-desc">Sawah, air terjun & desa tradisional yang tenang</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Senggigi</div>
+          <div class="dest-desc">Pantai & sunset Lombok Barat yang klasik</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+      <article class="dest-card reveal">
+        <div class="dest-card-bg"></div>
+        <div class="dest-overlay"></div>
+        <div class="dest-info">
+          <div class="dest-name">Senaru</div>
+          <div class="dest-desc">Gerbang menuju Rinjani & air terjun Sindang Gile</div>
+          <span class="dest-link">Lihat Driver <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PACKAGES ═══ -->
+<section id="paket" aria-labelledby="paket-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Paket Wisata</div>
+      <h2 id="paket-title">Paket Favorit Traveler</h2>
+      <p>Pilih paket yang sudah dirancang driver lokal kami — atau minta itinerary kustom.</p>
+    </div>
+    <div class="packages-grid">
+      <article class="package-card reveal">
+        <span class="package-duration">1 Hari</span>
+        <h3>Lombok Selatan Explorer</h3>
+        <ul class="package-includes">
+          <li>Kuta Mandalika</li>
+          <li>Tanjung Aan</li>
+          <li>Bukit Merese</li>
+          <li>Pantai Mawun</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp650.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Lombok Selatan Explorer">Lihat Paket</button>
+      </article>
+      <article class="package-card reveal reveal-d1">
+        <span class="package-duration">1 Hari</span>
+        <h3>Gili Island Hopping</h3>
+        <ul class="package-includes">
+          <li>Gili Trawangan</li>
+          <li>Gili Meno</li>
+          <li>Gili Air</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp850.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Gili Island Hopping">Lihat Paket</button>
+      </article>
+      <article class="package-card reveal reveal-d2">
+        <span class="package-duration">1 Hari</span>
+        <h3>Sembalun Scenic Trip</h3>
+        <ul class="package-includes">
+          <li>Sembalun Valley</li>
+          <li>Bukit Pergasingan</li>
+          <li>Ladang Stroberi</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp750.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Sembalun Scenic Trip">Lihat Paket</button>
+      </article>
+      <article class="package-card reveal">
+        <span class="package-duration">1 Hari</span>
+        <h3>Waterfall & Rinjani Tour</h3>
+        <ul class="package-includes">
+          <li>Sindang Gile</li>
+          <li>Tiu Kelep</li>
+          <li>Desa Senaru</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp700.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Waterfall dan Rinjani Tour">Lihat Paket</button>
+      </article>
+      <article class="package-card reveal reveal-d1">
+        <span class="package-duration">1 Hari</span>
+        <h3>Tetebatu Village Escape</h3>
+        <ul class="package-includes">
+          <li>Desa Tetebatu</li>
+          <li>Ladang Jeruk</li>
+          <li>Air Terjun Jeruk Manis</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp600.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Tetebatu Village Escape">Lihat Paket</button>
+      </article>
+      <article class="package-card reveal reveal-d2">
+        <span class="package-duration">1 Hari</span>
+        <h3>Senggigi Sunset Drive</h3>
+        <ul class="package-includes">
+          <li>Pantai Senggigi</li>
+          <li>Pura Batu Bolong</li>
+          <li>Malimbu Hill</li>
+        </ul>
+        <div class="package-price">
+          Mulai Rp550.000
+          <span class="package-price-note">*Harga contoh, dapat berubah</span>
+        </div>
+        <button class="btn-outline-green" aria-label="Lihat paket Senggigi Sunset Drive">Lihat Paket</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DRIVERS ═══ -->
+<section id="driver" class="section-pad" aria-labelledby="driver-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Driver Lokal</div>
+      <h2 id="driver-title">Temukan Driver Lokal Anda</h2>
+      <p>Kenali driver Anda sebelum perjalanan dimulai.</p>
+    </div>
+    <div class="drivers-grid" id="driversGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ TRUST ═══ -->
+<section id="trust" class="section-pad" aria-labelledby="trust-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Keamanan</div>
+      <h2 id="trust-title">Perjalanan Lebih Tenang</h2>
+      <p>Kami memastikan setiap aspek perjalanan Anda nyaman dan aman.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-item reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Driver Terverifikasi</h3>
+        <p>Setiap driver melalui proses verifikasi identitas dan kendaraan sebelum ditampilkan di platform kami.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3>Harga Transparan</h3>
+        <p>Estimasi harga tersedia sebelum Anda melakukan konfirmasi booking — tidak ada biaya tersembunyi.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Driver Lokal</h3>
+        <p>Dapatkan pengalaman Lombok langsung dari orang yang mengenal daerahnya — bukan agen wisata kota besar.</p>
+      </div>
+      <div class="trust-item reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Dukungan Platform</h3>
+        <p>Tim LOMBOKGO membantu menghubungkan traveler dan driver selama proses booking berlangsung.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section id="cara-kerja" class="section-pad" aria-labelledby="hw-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Cara Booking</div>
+      <h2 id="hw-title">Tiga Langkah Sederhana</h2>
+      <p>Dari pencarian hingga berangkat — semuanya mudah.</p>
+    </div>
+    <div class="steps-row">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <h3>Cari</h3>
+        <p>Pilih destinasi, tanggal, dan jumlah tamu. Sistem kami akan menampilkan driver yang tersedia untuk perjalanan Anda.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">02</div>
+        <h3>Pilih</h3>
+        <p>Bandingkan driver dan paket wisata yang sesuai kebutuhan. Kenali profil dan ulasan driver sebelum memilih.</p>
+      </div>
+      <div class="step-item reveal">
+        <div class="step-num">03</div>
+        <h3>Berangkat</h3>
+        <p>Konfirmasi booking dan nikmati perjalanan Anda di Lombok bersama driver lokal pilihan Anda.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DRIVER JOIN ═══ -->
+<section id="driver-join" aria-labelledby="dj-title">
+  <div class="container">
+    <div class="driver-join-inner">
+      <div class="driver-join-left reveal">
+        <span class="free-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          GRATIS BERGABUNG
+        </span>
+        <h2 id="dj-title">Punya kendaraan dan ingin mendapatkan lebih banyak tamu?</h2>
+        <p class="desc">Bergabung dengan LOMBOKGO secara gratis. Tampilkan profil Anda, tawarkan paket perjalanan, dan dapatkan pelanggan dari wisatawan yang mencari driver lokal di Lombok.</p>
+        <ul class="no-fee-list">
+          <li>Tidak ada biaya pendaftaran</li>
+          <li>Tidak ada biaya bulanan</li>
+          <li>Tidak ada biaya listing</li>
+          <li>Hanya 20% komisi dari booking berhasil</li>
+        </ul>
+        <div class="driver-join-actions">
+          <button class="btn-primary-green" onclick="openRegModal()">Daftar Jadi Driver</button>
+          <a href="#cara-kerja" class="link-subtle">Pelajari Cara Kerjanya</a>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="commission-card">
+          <h3>Sederhana dan Transparan</h3>
+          <p class="sub">Begini cara komisi LOMBOKGO bekerja setiap kali Anda mendapatkan booking melalui platform:</p>
+          <div class="commission-flow">
+            <div class="cf-item cf-booking">
+              <span class="cf-label">Total Booking Customer</span>
+              <span class="cf-value">Rp1.500.000</span>
+            </div>
+            <div class="cf-item cf-commission">
+              <span class="cf-label">Komisi Platform (20%)</span>
+              <span class="cf-value">− Rp300.000</span>
+            </div>
+            <div class="cf-item cf-driver">
+              <span class="cf-label">Anda Menerima</span>
+              <span class="cf-value">Rp1.200.000</span>
+            </div>
+          </div>
+          <p class="commission-note">Komisi hanya berlaku untuk booking yang berhasil diperoleh melalui platform LOMBOKGO.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BENEFITS ═══ -->
+<section id="benefits" aria-labelledby="benefit-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Keuntungan</div>
+      <h2 id="benefit-title">Kenapa Bergabung dengan LOMBOKGO?</h2>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card reveal">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Lebih Banyak Pelanggan</h3>
+        <p>Temukan wisatawan yang sedang aktif mencari driver lokal di Lombok — langsung dari platform kami.</p>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h3>Gratis Bergabung</h3>
+        <p>Tidak ada biaya pendaftaran maupun biaya bulanan. Daftar sekarang dan mulai menerima booking.</p>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Tampilkan Layanan Anda</h3>
+        <p>Promosikan kendaraan, paket wisata, pengalaman, dan area layanan Anda kepada ribuan traveler.</p>
+      </div>
+      <div class="benefit-card reveal">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <h3>Kelola Profil Sendiri</h3>
+        <p>Driver dapat memperbarui informasi layanan, harga, ketersediaan, dan paket wisata kapan saja.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section id="testimoni" class="section-pad" aria-labelledby="testi-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Testimoni</div>
+      <h2 id="testi-title">Cerita dari Driver Kami</h2>
+    </div>
+    <div class="testi-grid">
+      <article class="testi-card reveal">
+        <span class="testi-quote" aria-hidden="true">"</span>
+        <p class="testi-text">Saya bisa mendapatkan tamu yang sebelumnya sulit saya jangkau. Mereka juga sudah tahu harga dan tujuan sebelum menghubungi saya — sangat memudahkan.</p>
+        <div>
+          <div class="testi-author-name">Budi Santoso</div>
+          <div class="testi-author-role">Driver Lombok Selatan</div>
+        </div>
+      </article>
+      <article class="testi-card reveal">
+        <span class="testi-quote" aria-hidden="true">"</span>
+        <p class="testi-text">Lebih mudah menawarkan paket perjalanan tanpa harus selalu mencari tamu sendiri. Profil saya terlihat profesional dan banyak yang langsung menghubungi.</p>
+        <div>
+          <div class="testi-author-name">Ahmad Fuadi</div>
+          <div class="testi-author-role">Driver Mataram</div>
+        </div>
+      </article>
+      <article class="testi-card reveal">
+        <span class="testi-quote" aria-hidden="true">"</span>
+        <p class="testi-text">Bergabung gratis itu hal yang membuat saya langsung daftar. Sekarang dalam sebulan bisa dapat 15–20 booking dari platform. Luar biasa.</p>
+        <div>
+          <div class="testi-author-name">Made Wirawan</div>
+          <div class="testi-author-role">Driver Senggigi</div>
+        </div>
+      </article>
+    </div>
+    <p class="testi-demo-note">* Testimoni di atas adalah contoh demo. Akan digantikan dengan ulasan nyata dari driver LOMBOKGO.</p>
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCES ═══ -->
+<section id="experiences" aria-labelledby="exp-title">
+  <div class="container">
+    <div class="sh reveal">
+      <div class="sh-label">Pengalaman</div>
+      <h2 id="exp-title">Lombok Lebih dari Sekadar Pantai</h2>
+      <p>Temukan sisi Lombok yang mungkin tidak Anda temukan dari itinerary biasa.</p>
+    </div>
+    <div class="exp-grid">
+      <div class="exp-card reveal">
+        <div class="exp-card-bg"></div>
+        <div class="exp-overlay"></div>
+        <div class="exp-content">
+          <span class="exp-tag">Alam</span>
+          <div class="exp-title">Pantai & Laut Biru</div>
+        </div>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-card-bg"></div>
+        <div class="exp-overlay"></div>
+        <div class="exp-content">
+          <span class="exp-tag">Petualangan</span>
+          <div class="exp-title">Island Hopping</div>
+        </div>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-card-bg"></div>
+        <div class="exp-overlay"></div>
+        <div class="exp-content">
+          <span class="exp-tag">Alam</span>
+          <div class="exp-title">Air Terjun & Hutan</div>
+        </div>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-card-bg"></div>
+        <div class="exp-overlay"></div>
+        <div class="exp-content">
+          <span class="exp-tag">Pegunungan</span>
+          <div class="exp-title">Rinjani & Sembalun</div>
+        </div>
+      </div>
+      <div class="exp-card reveal">
+        <div class="exp-card-bg"></div>
+        <div class="exp-overlay"></div>
+        <div class="exp-content">
+          <span class="exp-tag">Budaya</span>
+          <div class="exp-title">Desa & Tradisi Sasak</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section id="final-cta" aria-label="CTA akhir">
+  <div class="container">
+    <div class="final-cta-inner reveal">
+      <h2>Perjalanan Anda di Lombok<br/>Dimulai di Sini.</h2>
+      <p>Cari driver lokal untuk perjalanan Anda, atau bergabung sebagai driver dan temukan peluang baru bersama LOMBOKGO.</p>
+      <div class="cta-btn-row">
+        <a href="#driver" class="btn-white">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Cari Driver
+        </a>
+        <button class="btn-ghost-white" onclick="openRegModal()">Jadi Driver Gratis</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand-name">LOMBOKGO</div>
+        <div class="footer-tagline">Explore Lombok. Ride Local.</div>
+        <p class="footer-desc">Platform marketplace menghubungkan wisatawan dengan driver lokal terpercaya di seluruh Lombok, Indonesia.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Jelajahi</div>
+        <nav class="footer-links" aria-label="Footer navigasi">
+          <a href="#destinasi">Destinasi</a>
+          <a href="#paket">Paket Wisata</a>
+          <a href="#driver">Cari Driver</a>
+          <a href="#cara-kerja">Cara Kerja</a>
+          <a href="#final-cta">Tentang Kami</a>
+          <a href="#">FAQ</a>
+        </nav>
+      </div>
+      <div>
+        <div class="footer-col-title">Untuk Driver</div>
+        <nav class="footer-links" aria-label="Footer navigasi driver">
+          <a href="#" onclick="openRegModal();return false;">Jadi Driver</a>
+          <a href="#driver-join">Ketentuan Komisi</a>
+          <a href="#">Panduan Driver</a>
+          <a href="#">Syarat & Ketentuan</a>
+        </nav>
+      </div>
+      <div>
+        <div class="footer-col-title">Kontak</div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.21 3.4 2 2 0 0 1 3.22 1H6.27a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.29a16 16 0 0 0 6.29 6.29l.67-.67a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <a href="https://wa.me/6281234567890">WhatsApp</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:halo@lombokgo.id">halo@lombokgo.id</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          <a href="#">@lombokgo.id</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          <a href="#">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 LOMBOKGO. All rights reserved.</p>
+      <p class="footer-credit">Developed by <a href="#">Arya</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ STICKY MOBILE CTA ═══ -->
+<div class="sticky-mobile-cta" aria-label="CTA mobile">
+  <button class="btn-primary-green" onclick="document.getElementById('destinasi').scrollIntoView({behavior:'smooth'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Cari Driver
+  </button>
+</div>
+
+<!-- ═══ DRIVER REGISTRATION MODAL ═══ -->
+<div class="modal-overlay" id="regModal" role="dialog" aria-modal="true" aria-labelledby="reg-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="reg-modal-title">Daftar Jadi Driver</h2>
+      <p>Bergabung gratis. Tidak ada biaya pendaftaran. Komisi hanya saat booking berhasil.</p>
+      <button class="modal-close" onclick="closeRegModal()" aria-label="Tutup modal">×</button>
+    </div>
+    <div class="modal-body" id="regFormBody">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="r-name">Nama Lengkap *</label>
+          <input type="text" id="r-name" placeholder="Nama sesuai KTP" required/>
+        </div>
+        <div class="form-field">
+          <label for="r-wa">Nomor WhatsApp *</label>
+          <input type="tel" id="r-wa" placeholder="08xxxxxxxxxx" required/>
+        </div>
+        <div class="form-field">
+          <label for="r-kota">Kota / Area *</label>
+          <select id="r-kota" required>
+            <option value="">Pilih area</option>
+            <option>Mataram</option>
+            <option>Senggigi</option>
+            <option>Kuta Mandalika</option>
+            <option>Sembalun</option>
+            <option>Tetebatu</option>
+            <option>Senaru</option>
+            <option>Bangsal</option>
+            <option>Area lain</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="r-vtype">Jenis Kendaraan *</label>
+          <select id="r-vtype" required>
+            <option value="">Pilih jenis</option>
+            <option>Mobil (Minivan)</option>
+            <option>Mobil (SUV)</option>
+            <option>Mobil (Sedan)</option>
+            <option>Motor</option>
+            <option>Minibus</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="r-vmodel">Model Kendaraan *</label>
+          <input type="text" id="r-vmodel" placeholder="Contoh: Toyota Avanza" required/>
+        </div>
+        <div class="form-field">
+          <label for="r-vyear">Tahun Kendaraan</label>
+          <input type="number" id="r-vyear" placeholder="Contoh: 2020" min="2000" max="2026"/>
+        </div>
+        <div class="form-field full">
+          <label for="r-lang">Bahasa yang Dikuasai</label>
+          <input type="text" id="r-lang" placeholder="Contoh: Bahasa Indonesia, English"/>
+        </div>
+        <div class="form-field full">
+          <label for="r-area">Area Layanan</label>
+          <input type="text" id="r-area" placeholder="Contoh: Seluruh Lombok, khusus Lombok Selatan"/>
+        </div>
+        <div class="form-field full">
+          <label for="r-exp">Pengalaman sebagai Driver</label>
+          <textarea id="r-exp" placeholder="Ceritakan pengalaman Anda sebagai driver wisata..."></textarea>
+        </div>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="check1" required/>
+        <label for="check1">Saya memahami bahwa bergabung dengan LOMBOKGO tidak dikenakan biaya pendaftaran maupun biaya bulanan.</label>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="check2" required/>
+        <label for="check2">Saya memahami bahwa booking yang berhasil melalui platform dikenakan komisi sebesar 20% kepada LOMBOKGO.</label>
+      </div>
+      <button class="btn-primary-green modal-submit" onclick="submitReg()">
+        Daftar sebagai Driver
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-success" id="regSuccess">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>Pendaftaran Terkirim!</h3>
+      <p>Terima kasih sudah mendaftar. Tim LOMBOKGO akan menghubungi Anda melalui WhatsApp dalam 1–2 hari kerja untuk proses verifikasi.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DRIVER DETAIL MODAL ═══ -->
+<div class="modal-overlay" id="driverModal" role="dialog" aria-modal="true" aria-labelledby="driver-modal-title">
+  <div class="modal driver-modal-inner">
+    <div class="driver-modal-header" id="driverModalHeader">
+      <button class="driver-modal-close" onclick="closeDriverModal()" aria-label="Tutup profil driver">×</button>
+      <div class="dpm-top">
+        <div class="dpm-avatar" id="dpmAvatar"></div>
+        <div>
+          <div class="dpm-name" id="dpmName"></div>
+          <div class="dpm-verified">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Driver Terverifikasi
+          </div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.65)" id="dpmLocation"></div>
+        </div>
+      </div>
+      <div class="dpm-stats">
+        <div class="dpm-stat">
+          <span class="dpm-stat-val" id="dpmRating"></span>
+          <span class="dpm-stat-label">Rating</span>
+        </div>
+        <div class="dpm-stat">
+          <span class="dpm-stat-val" id="dpmTrips"></span>
+          <span class="dpm-stat-label">Perjalanan</span>
+        </div>
+        <div class="dpm-stat">
+          <span class="dpm-stat-val" id="dpmExp"></span>
+          <span class="dpm-stat-label">Pengalaman</span>
+        </div>
+      </div>
+    </div>
+    <div class="driver-modal-body" id="driverModalBody"></div>
+  </div>
+</div>
+
+<script>
+const drivers = [
+  {
+    id:1,
+    initials:'MA',
+    name:'Made Arya',
+    location:'Mataram',
+    exp:'5 tahun',
+    vehicle:'Toyota Avanza',
+    trips:127,
+    rating:'4.9',
+    langs:'Indonesia · English',
+    price:'Rp500.000',
+    areas:'Seluruh Lombok',
+    packages:[
+      {name:'Lombok Selatan Explorer (1 Hari)', price:'Rp650.000'},
+      {name:'Gili Trawangan Day Trip', price:'Rp750.000'},
+      {name:'Custom Tour', price:'Negosiasi'},
+    ],
+    reviews:[
+      {name:'Sarah M.',rating:'⭐⭐⭐⭐⭐',text:'"Made sangat ramah dan mengenal Lombok dengan baik. Perjalanan kami ke Kuta Mandalika jadi sangat menyenangkan!"'},
+      {name:'James T.',rating:'⭐⭐⭐⭐⭐',text:'"Sangat profesional. Tepat waktu, kendaraan bersih, dan banyak merekomendasikan tempat tersembunyi."'},
+    ]
+  },
+  {
+    id:2,
+    initials:'AS',
+    name:'Ahmad Syahrul',
+    location:'Senggigi',
+    exp:'8 tahun',
+    vehicle:'Daihatsu Xenia',
+    trips:243,
+    rating:'4.8',
+    langs:'Indonesia · English · Mandarin',
+    price:'Rp450.000',
+    areas:'Lombok Barat & Utara',
+    packages:[
+      {name:'Senggigi Sunset Drive', price:'Rp550.000'},
+      {name:'North Lombok Waterfalls', price:'Rp700.000'},
+      {name:'Rinjani Gateway Tour', price:'Rp800.000'},
+    ],
+    reviews:[
+      {name:'Chen L.',rating:'⭐⭐⭐⭐⭐',text:'"Ahmad sangat membantu dan bisa berbahasa Mandarin. Kami merasa nyaman sepanjang perjalanan."'},
+    ]
+  },
+  {
+    id:3,
+    initials:'BW',
+    name:'Bayu Wirawan',
+    location:'Kuta Mandalika',
+    exp:'3 tahun',
+    vehicle:'Honda Mobilio',
+    trips:89,
+    rating:'4.7',
+    langs:'Indonesia · English',
+    price:'Rp550.000',
+    areas:'Lombok Selatan',
+    packages:[
+      {name:'South Lombok Beach Hop', price:'Rp650.000'},
+      {name:'Mandalika Circuit Tour', price:'Rp500.000'},
+    ],
+    reviews:[
+      {name:'Dina R.',rating:'⭐⭐⭐⭐⭐',text:'"Bayu membawa kami ke pantai-pantai tersembunyi yang luar biasa indah. Sangat direkomendasikan!"'},
+    ]
+  },
+  {
+    id:4,
+    initials:'ID',
+    name:'I Made Darmawan',
+    location:'Sembalun',
+    exp:'10 tahun',
+    vehicle:'Toyota Innova',
+    trips:312,
+    rating:'5.0',
+    langs:'Indonesia · English',
+    price:'Rp600.000',
+    areas:'Lombok Timur & Rinjani',
+    packages:[
+      {name:'Sembalun Valley Scenic', price:'Rp750.000'},
+      {name:'Rinjani Base Camp Tour', price:'Rp900.000'},
+      {name:'East Lombok Full Day', price:'Rp800.000'},
+    ],
+    reviews:[
+      {name:'Marco B.',rating:'⭐⭐⭐⭐⭐',text:'"Pengalaman terbaik di Lombok! Darmawan adalah pemandu yang luar biasa untuk area Sembalun dan Rinjani."'},
+      {name:'Yuki K.',rating:'⭐⭐⭐⭐⭐',text:'"Sangat berpengetahuan tentang flora dan fauna lokal. Trip ke Sembalun jadi tak terlupakan."'},
+    ]
+  },
+  {
+    id:5,
+    initials:'RM',
+    name:'Rizky Maulana',
+    location:'Mataram',
+    exp:'4 tahun',
+    vehicle:'Suzuki Ertiga',
+    trips:156,
+    rating:'4.8',
+    langs:'Indonesia · English',
+    price:'Rp480.000',
+    areas:'Seluruh Lombok',
+    packages:[
+      {name:'Tetebatu Village Escape', price:'Rp600.000'},
+      {name:'Lombok Waterfall Tour', price:'Rp700.000'},
+      {name:'Full Island Discovery', price:'Rp950.000'},
+    ],
+    reviews:[
+      {name:'Emma S.',rating:'⭐⭐⭐⭐⭐',text:'"Rizky adalah driver yang sangat baik. Paket Tetebatu-nya luar biasa — kami mendapatkan pengalaman autentik desa Lombok."'},
+    ]
+  },
+  {
+    id:6,
+    initials:'NW',
+    name:'Nengah Widi',
+    location:'Bangsal',
+    exp:'7 tahun',
+    vehicle:'Toyota Avanza',
+    trips:198,
+    rating:'4.9',
+    langs:'Indonesia · English',
+    price:'Rp520.000',
+    areas:'Lombok Utara & Gili',
+    packages:[
+      {name:'Gili Islands Transfer', price:'Rp400.000'},
+      {name:'North Lombok Discovery', price:'Rp750.000'},
+      {name:'Senaru & Waterfall Trip', price:'Rp700.000'},
+    ],
+    reviews:[
+      {name:'Liam O.',rating:'⭐⭐⭐⭐⭐',text:'"Nengah mengantar kami ke Bangsal dan membantu semua urusan perjalanan ke Gili. Sangat membantu dan terpercaya."'},
+    ]
+  }
+];
+
+function renderDrivers(){
+  const grid = document.getElementById('driversGrid');
+  grid.innerHTML = drivers.map(d => `
+    <article class="driver-card reveal" onclick="openDriverModal(${d.id})" role="button" tabindex="0" aria-label="Lihat profil ${d.name}" onkeydown="if(event.key==='Enter')openDriverModal(${d.id})">
+      <div class="driver-card-top">
+        <div class="driver-avatar">
+          ${d.initials}
+          <div class="driver-verified" aria-label="Terverifikasi">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="driver-meta-name">${d.name}</div>
+          <div class="driver-meta-loc">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${d.location}
+          </div>
+          <div class="driver-rating">
+            <span>★</span> ${d.rating}
+          </div>
+        </div>
+      </div>
+      <div class="driver-info-row">
+        <div class="driver-info-item">
+          <div class="driver-info-label">Kendaraan</div>
+          <div class="driver-info-val">${d.vehicle}</div>
+        </div>
+        <div class="driver-info-item">
+          <div class="driver-info-label">Perjalanan</div>
+          <div class="driver-info-val">${d.trips}x selesai</div>
+        </div>
+        <div class="driver-info-item">
+          <div class="driver-info-label">Pengalaman</div>
+          <div class="driver-info-val">${d.exp}</div>
+        </div>
+        <div class="driver-info-item">
+          <div class="driver-info-label">Area</div>
+          <div class="driver-info-val" style="font-size:0.76rem">${d.areas}</div>
+        </div>
+      </div>
+      <div class="driver-langs">🗣 ${d.langs}</div>
+      <div class="driver-price-row">
+        <div class="driver-price">${d.price} <small>/ hari</small></div>
+        <button class="btn-sm-green" onclick="event.stopPropagation();openDriverModal(${d.id})" aria-label="Lihat profil ${d.name}">Lihat Profil</button>
+      </div>
+    </article>
+  `).join('');
+  document.querySelectorAll('.driver-card.reveal').forEach(el => observer.observe(el));
+}
+
+function openDriverModal(id){
+  const d = drivers.find(x=>x.id===id);
+  if(!d) return;
+  document.getElementById('dpmAvatar').textContent = d.initials;
+  document.getElementById('dpmName').textContent = d.name;
+  document.getElementById('dpmLocation').textContent = '📍 '+d.location+' · '+d.vehicle;
+  document.getElementById('dpmRating').textContent = '⭐ '+d.rating;
+  document.getElementById('dpmTrips').textContent = d.trips;
+  document.getElementById('dpmExp').textContent = d.exp;
+  document.getElementById('driverModalBody').innerHTML = `
+    <p class="dpm-section-title">Paket Tersedia</p>
+    <div class="dpm-packages-list">
+      ${d.packages.map(p=>`
+        <div class="dpm-package-row">
+          <span class="dpm-pkg-name">${p.name}</span>
+          <span class="dpm-pkg-price">${p.price}</span>
+        </div>
+      `).join('')}
+    </div>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;margin-bottom:1.5rem;">*Harga dapat bervariasi tergantung rute dan kebutuhan</p>
+    <p class="dpm-section-title">Bahasa</p>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">🗣 ${d.langs}</p>
+    <p class="dpm-section-title">Area Layanan</p>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">📍 ${d.areas}</p>
+    <p class="dpm-section-title">Ulasan Pelanggan</p>
+    <div class="dpm-reviews">
+      ${d.reviews.map(r=>`
+        <div class="review-item">
+          <div class="review-top">
+            <span class="review-name">${r.name}</span>
+            <span class="review-rating">${r.rating}</span>
+          </div>
+          <p class="review-text">${r.text}</p>
+        </div>
+      `).join('')}
+    </div>
+    <div class="dpm-cta-row">
+      <button class="btn-wa" aria-label="Hubungi via WhatsApp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Hubungi via WhatsApp
+      </button>
+      <button class="btn-primary-green" onclick="closeDriverModal();openRegModal()">Pesan Sekarang</button>
+    </div>
+  `;
+  const modal = document.getElementById('driverModal');
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  modal.querySelector('.driver-modal-close').focus();
+}
+function closeDriverModal(){
+  document.getElementById('driverModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function openRegModal(){
+  document.getElementById('regModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('regFormBody').style.display='block';
+  document.getElementById('regSuccess').style.display='none';
+}
+function closeRegModal(){
+  document.getElementById('regModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function submitReg(){
+  const name=document.getElementById('r-name').value.trim();
+  const wa=document.getElementById('r-wa').value.trim();
+  const c1=document.getElementById('check1').checked;
+  const c2=document.getElementById('check2').checked;
+  if(!name||!wa){alert('Mohon isi nama dan nomor WhatsApp.');return}
+  if(!c1||!c2){alert('Mohon centang kedua pernyataan persetujuan.');return}
+  document.getElementById('regFormBody').style.display='none';
+  document.getElementById('regSuccess').style.display='block';
+}
+
+document.getElementById('regModal').addEventListener('click',function(e){
+  if(e.target===this) closeRegModal();
+});
+document.getElementById('driverModal').addEventListener('click',function(e){
+  if(e.target===this) closeDriverModal();
+});
+
+const nav = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+},{passive:true});
+
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click',()=>{
+  const open = mobileNav.classList.toggle('open');
+  hamburger.classList.toggle('open',open);
+  hamburger.setAttribute('aria-expanded',open);
+});
+document.querySelectorAll('.mobile-link').forEach(a=>{
+  a.addEventListener('click',()=>{
+    mobileNav.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+  });
+});
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
+
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+setTimeout(()=>{
+  document.querySelectorAll('#hero .reveal, #search .reveal').forEach(el=>el.classList.add('in'));
+},80);
+
+renderDrivers();
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeRegModal();
+    closeDriverModal();
+  }
+});
+</script>
+</body>
+</html>
